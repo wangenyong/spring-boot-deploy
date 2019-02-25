@@ -10,6 +10,16 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
 
+  mysql:
+    image: mysql/mysql-server:5.7
+    environment:
+      MYSQL_DATABASE: db_example
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - "3306:3306"
+    restart: always
+
   app:
     restart: always
     build: .
@@ -19,3 +29,5 @@ services:
       - "8080"
     depends_on:
       - nginx
+      - mysql
+    command: ["/wait-for-it.sh","mysql:3306","--","java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
