@@ -1,0 +1,21 @@
+version: '3'
+services:
+  nginx:
+    container_name: v-nginx
+    image: nginx:stable
+    restart: always
+    ports:
+      - 8088:80
+      - 443:443
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+
+  app:
+    restart: always
+    build: .
+    container_name: v-springbootdeploy
+    image: sprintbootdeploy:test
+    expose:
+      - "8080"
+    depends_on:
+      - nginx
