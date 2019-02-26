@@ -7,11 +7,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path = "/")
 public class MainController {
 
-    @RequestMapping(path = "/")
-    public String hello() {
-        return "Hello spring deploy";
-    }
-
     @RequestMapping(path = "/test")
     public String test() {
         return  "test";
@@ -30,7 +25,7 @@ public class MainController {
     }
 
     @GetMapping(path="/all")
-    public @ResponseBody String getAllUsers() {
-        return "ok";
+    public @ResponseBody Iterable<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }
