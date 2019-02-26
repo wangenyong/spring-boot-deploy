@@ -28,10 +28,10 @@ services:
     restart: always
     build: .
     container_name: v-springbootdeploy
-    image: sprintbootdeploy:test
+    image: sprintbootdeploy
     expose:
       - "8080"
     depends_on:
       - nginx
       - mysql
-    command: ["/wait-for-it.sh","mysql:3306","--","java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar", "--spring.profiles.active=prod"]
+    command: ["/wait-for-it.sh","mysql:3306","--","java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar","--spring.profiles.active=prod"]
