@@ -16,9 +16,9 @@ function upload_image_if_needed {
 	fi
 }
 
-function build_image {
-	docker build -t $IMAGE_REPOSITORY:$1 $2
-}
+#function build_image {
+#	docker build -t $IMAGE_REPOSITORY:$1 $2
+#}
 
 #build_image 0.0.1 .
-upload_image_if_needed 0.0.1
+upload_image_if_needed $1

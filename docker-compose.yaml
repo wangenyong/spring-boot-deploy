@@ -28,7 +28,7 @@ services:
     restart: always
     build: .
     container_name: v-springbootdeploy
-    image: sprintbootdeploy
+    image: springbootdeploy:0.0.2
     expose:
       - "8080"
     depends_on:
