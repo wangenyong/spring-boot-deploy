@@ -31,4 +31,4 @@ services:
     depends_on:
       - nginx
       - mysql
-    command: ["/wait-for-it.sh","mysql:3306","--","java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+    command: ["/wait-for-it.sh","mysql:3306","--","java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar", "--spring.profiles.active=prod"]
