@@ -21,8 +21,50 @@ I am a novice on [Sprint Boot](https://spring.io/projects/spring-boot). I want t
 ## Getting Started
 
 ### Create project
+With IntelliJ IDEA, click "File -> New -> Project...", select "Spring Initializr" to create the project.
 
+Add jpa dependencies to connect Mysql database.
+```groovy
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    // JPA Data (We are going to use Repositories, Entities, Hibernate, etc...)
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // Use MySQL Connector-J
+    implementation 'mysql:mysql-connector-java'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+```
 
+### Core function
+The core function is simple. Insert user and get all.
+```java
+@RestController
+@RequestMapping(path = "/")
+public class MainController {
+
+    @RequestMapping(path = "/test")
+    public String test() {
+        return  "test";
+    }
+
+    @Autowired
+    UserRepository userRepository;
+
+    @RequestMapping(path = "/add")
+    public @ResponseBody String addNewUser (@RequestParam String name, @RequestParam String email) {
+        User n = new User();
+        n.setName(name);
+        n.setEmail(email);
+        userRepository.save(n);
+        return "Saved";
+    }
+
+    @GetMapping(path="/all")
+    public @ResponseBody Iterable<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+}
+```
 
 <!-- MARKDOWN LINKS & IMAGES -->
 [build-shield]: https://img.shields.io/badge/build-passing-brightgreen.svg?style=flat-square
