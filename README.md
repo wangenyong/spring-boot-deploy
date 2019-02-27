@@ -42,11 +42,6 @@ The core function is simple. Insert user and get all.
 @RequestMapping(path = "/")
 public class MainController {
 
-    @RequestMapping(path = "/test")
-    public String test() {
-        return  "test";
-    }
-
     @Autowired
     UserRepository userRepository;
 
@@ -65,6 +60,106 @@ public class MainController {
     }
 }
 ```
+
+### Jpa configure
+This configure file is for development.
+```
+# application-dev.properties
+spring.jpa.hibernate.ddl-auto=create
+spring.datasource.url=jdbc:mysql://localhost:3306/db_example
+spring.datasource.username=springuser
+spring.datasource.password=ThePassword
+spring.jpa.show-sql=true
+
+```
+
+### Run project
+Build project by command `./gradlew build`, and Run it by command `java -jar build/libs/spring-boot-deploy-0.0.1-SNAPSHOT.jar`.
+Then test it by [curl](https://curl.haxx.se/).
+
+```bash
+$ curl 'localhost:8080/add?name=First&email=someemail@someemailprovider.com'
+```
+The reply should be
+```bash
+Saved
+```
+
+```bash
+$ curl 'localhost:8080/all'
+```
+The reply should be
+```json
+[{"id":1,"name":"First","email":"someemail@someemailprovider.com"}]
+```
+
+## Deploy project by Docker
+
+### Create Dockerfile
+```dockerfile
+FROM openjdk:8-jdk-alpine
+
+RUN echo "https://mirror.tuna.tsinghua.edu.cn/alpine/v3.4/main/" > /etc/apk/repositories
+RUN apk add --no-cache bash
+
+VOLUME /tmp
+COPY ./build/libs/spring-boot-deploy-0.0.1-SNAPSHOT.jar app.jar
+COPY ./wait-for-it.sh wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
+
+CMD ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+```
+### Create docker-compose.yaml
+```dockerfile
+version: '3'
+services:
+  nginx:
+    container_name: v-nginx
+    image: nginx:stable
+    restart: always
+    ports:
+      - 8088:80
+      - 443:443
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+
+  mysql:
+    container_name: v-mysql
+    image: mysql/mysql-server:5.7
+    environment:
+      MYSQL_DATABASE: db_example
+      MYSQL_USER: springuser
+      MYSQL_PASSWORD: ThePassword
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
+    volumes:
+      - ./data:/var/lib/mysql
+    restart: always
+
+  app:
+    restart: always
+    build: .
+    container_name: v-springbootdeploy
+    image: springbootdeploy:0.0.2
+    expose:
+      - "8080"
+    depends_on:
+      - nginx
+      - mysql
+    command: ["/wait-for-it.sh","mysql:3306","--","java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar","--spring.profiles.active=prod"]
+```
+
+### Create production jpa configure file
+Set `spring.jpa.hibernate.ddl-auto` to `create` when the project first run. Then set it `none`. The reason can reference document [Accessing data with MySQL](https://spring.io/guides/gs/accessing-data-mysql/).
+```
+# # application-prod.properties
+spring.jpa.hibernate.ddl-auto=create
+spring.datasource.url=jdbc:mysql://mysql:3306/db_example
+spring.datasource.username=springuser
+spring.datasource.password=ThePassword
+```
+
 
 <!-- MARKDOWN LINKS & IMAGES -->
 [build-shield]: https://img.shields.io/badge/build-passing-brightgreen.svg?style=flat-square
