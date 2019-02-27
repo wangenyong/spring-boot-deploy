@@ -3,6 +3,7 @@ HELP.md
 /build/
 !gradle/wrapper/gradle-wrapper.jar
 wait-for-it.sh
+/data/
 
 ### STS ###
 .apt_generated
